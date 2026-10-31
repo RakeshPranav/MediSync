@@ -162,6 +162,8 @@ medical_inventory/
 ├── test_backend.py     17 backend tests (uses its own test database)
 ├── requirements.txt    Python dependencies
 ├── README.md           This file
+├── DEMO_AND_VIVA.md    Demo script, break-test checklist and viva Q&A
+├── .gitignore          Keeps venv, caches and database files out of Git
 └── database/
     ├── inventory.db        Application database
     └── test_inventory.db   Created by the tests only
@@ -190,13 +192,14 @@ All business-rule violations raise `InventoryError`, which the UI shows as a cle
 **Prerequisites:** Python 3.10 or later. VS Code is recommended. DB Browser for SQLite is optional for inspecting the database.
 
 ```bash
-# 1. Go to the project folder
-cd medical_inventory
+# 1. Get the code and enter the project folder
+git clone <your-repository-url>
+cd <repository-folder-name>
 
 # 2. Create and activate a virtual environment
 python -m venv venv
-venv\Scripts\activate            # Windows
-# source venv/bin/activate       # macOS / Linux
+venv\Scripts\activate            # Windows (Command Prompt)
+# source venv/bin/activate       # macOS / Linux (use python3 if python is not found)
 
 # 3. Install dependencies
 pip install -r requirements.txt
@@ -211,9 +214,11 @@ python seed_data.py
 streamlit run app.py
 ```
 
+If the `streamlit` command is not recognised, run `python -m streamlit run app.py` instead. On the very first launch Streamlit may ask for an email in the terminal; press Enter to skip it.
+
 The app opens at `http://localhost:8501`.
 
-Always run these commands from the project root, because the database path is relative (`database/inventory.db`).
+Always run these commands from the project root, because the database path is relative (`database/inventory.db`). The database file is created locally by steps 4 and 5; it is not stored in Git.
 
 ---
 
@@ -307,6 +312,9 @@ Coverage:
 | App shows no data | You probably ran from another folder and created a second empty database. Run from the project root, then `python seed_data.py`. |
 | `PermissionError` when running `seed_data.py` on Windows | The database file is open. Stop Streamlit and any DB viewer, then retry. |
 | Schema looks outdated after pulling changes | Delete `database/inventory.db`, run `python database.py`, then `python seed_data.py`. |
+| PowerShell says running scripts is disabled when activating the venv | Run `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass`, then activate again, or use Command Prompt. |
+| `streamlit` is not recognised | The venv is not active. Activate it, or use `python -m streamlit run app.py`. |
+| `python` not found on macOS / Linux | Use `python3` and `pip3`. |
 
 ---
 
@@ -317,6 +325,7 @@ Coverage:
 - An excursion is a single out-of-range reading. Duration of excursion and mean kinetic temperature are not modelled.
 - Temperature logs are per batch, not per storage location or sensor.
 - Dispatch commits immediately; there is no preview step and no dispatch cancellation or returns.
+- Records cannot be edited or deleted from the UI, by design: pharmaceutical records are corrected by adding new records (for example rejecting a batch with a reason), which keeps the audit trail intact.
 - Single-user SQLite database, suited to a demo or small site rather than concurrent multi-site use.
 
 ## 14. Future enhancements
